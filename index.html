@@ -561,7 +561,7 @@
   <section class="hero-scroll-container" id="hero-scroll">
     <div class="hero-sticky-frame">
       <div class="hero-media" aria-hidden="true">
-        <video muted loop playsinline preload="auto">
+        <video muted autoplay loop playsinline webkit-playsinline="true" x5-playsinline="true" preload="auto">
           <source src="tea2.mp4" type="video/mp4">
         </video>
         <div class="hero-video-mask"></div>
@@ -657,7 +657,7 @@
   <!-- HARMONY / ECO -->
   <section class="sec harmony-section" id="harmony">
     <div class="harmony-bg-media" aria-hidden="true">
-      <video muted loop playsinline preload="auto">
+      <video muted autoplay loop playsinline webkit-playsinline="true" x5-playsinline="true" preload="auto">
         <source src="tea%201.mp4" type="video/mp4">
       </video>
       <div class="harmony-video-mask"></div>
@@ -862,6 +862,28 @@
   
   updateSteepRail();
 
+  // Primes a video's decode pipeline so that setting currentTime while
+  // paused actually repaints a new frame. Mobile Safari/Chrome often
+  // won't render scrubbed frames until the video has been played at
+  // least once, so we briefly play then pause it (allowed without a
+  // user gesture because the video is muted + playsinline).
+  function primeVideoForScrub(video){
+    video.muted = true;
+    video.setAttribute('muted', '');
+    video.playsInline = true;
+    var playPromise = video.play();
+    if(playPromise && typeof playPromise.then === 'function'){
+      playPromise.then(function(){
+        video.pause();
+      }).catch(function(){
+        // Autoplay/prime blocked (e.g. low battery mode) — scrubbing will
+        // still be attempted and will self-correct once allowed.
+      });
+    } else {
+      video.pause();
+    }
+  }
+
   // Scroll Video Scrubbing Engine (Smoothed Lerp)
   (function(){
     var scrollSection = document.getElementById('hero-scroll');
@@ -950,9 +972,13 @@
     
     // Wait for video to have metadata before beginning
     if (video.readyState >= 1) {
+      primeVideoForScrub(video);
       animateScrub();
     } else {
-      video.addEventListener('loadedmetadata', animateScrub);
+      video.addEventListener('loadedmetadata', function(){
+        primeVideoForScrub(video);
+        animateScrub();
+      });
     }
   })();
 
@@ -1011,9 +1037,13 @@
     }
     
     if (video.readyState >= 1) {
+      primeVideoForScrub(video);
       animateHarmonyScrub();
     } else {
-      video.addEventListener('loadedmetadata', animateHarmonyScrub);
+      video.addEventListener('loadedmetadata', function(){
+        primeVideoForScrub(video);
+        animateHarmonyScrub();
+      });
     }
   })();
 
