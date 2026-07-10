@@ -185,7 +185,7 @@
   }
   .hero-media::after {
     content: '';
-    position: absolute; 
+    position: absolute;
     inset: 0;
     background: linear-gradient(to bottom, rgba(246,241,230,0.1) 0%, rgba(246,241,230,0) 40%, rgba(246,241,230,0.4) 100%);
     pointer-events: none;
@@ -566,10 +566,10 @@
         </video>
         <div class="hero-video-mask"></div>
       </div>
-      
+
       <!-- Sticky copy layers that fade in and out -->
       <div class="hero-copy-track">
-        
+
         <!-- Scene 1: Intro Title -->
         <div class="scroll-scene scene-intro active">
           <span class="eyebrow">Functional Wellness Tea</span>
@@ -841,7 +841,7 @@
   var steepDot = document.getElementById('steepDot');
   var railHeight = window.innerHeight;
   var ticking = false;
-  
+
   function updateSteepRail(){
     var doc = document.documentElement;
     var scrollPct = window.scrollY / Math.max(1, (doc.scrollHeight - doc.clientHeight));
@@ -850,16 +850,16 @@
     if(steepDot){ steepDot.style.transform = 'translateY(' + (scrollPct * (railHeight - 10)) + 'px)'; }
     ticking = false;
   }
-  
+
   window.addEventListener('scroll', function(){
     if(!ticking){ requestAnimationFrame(updateSteepRail); ticking = true; }
   }, {passive:true});
-  
+
   window.addEventListener('resize', function(){
     railHeight = window.innerHeight;
     updateSteepRail();
   });
-  
+
   updateSteepRail();
 
   // Primes a video's decode pipeline so that setting currentTime while
@@ -894,13 +894,13 @@
       document.querySelector('.scene-skill-2'),
       document.querySelector('.scene-skill-3')
     ];
-    
+
     if(!scrollSection || !video) return;
-    
+
     var targetProgress = 0;
     var currentProgress = 0;
     var isHeroVisible = true;
-    
+
     // Check if section is visible in viewport to save resources
     if('IntersectionObserver' in window){
       var observer = new IntersectionObserver(function(entries){
@@ -908,7 +908,7 @@
       }, { threshold: 0.01 });
       observer.observe(scrollSection);
     }
-    
+
     function updateTargetProgress(){
       var rect = scrollSection.getBoundingClientRect();
       var scrolled = -rect.top;
@@ -917,11 +917,11 @@
         targetProgress = Math.min(1, Math.max(0, scrolled / maxScroll));
       }
     }
-    
+
     window.addEventListener('scroll', updateTargetProgress, {passive:true});
     window.addEventListener('resize', updateTargetProgress, {passive:true});
     updateTargetProgress();
-    
+
     // Update text overlays based on progress
     function updateTextScenes(progress){
       var activeIndex = -1;
@@ -934,7 +934,7 @@
       } else if (progress >= 0.80 && progress <= 1.0) {
         activeIndex = 3;
       }
-      
+
       scenes.forEach(function(scene, i){
         if(!scene) return;
         if(i === activeIndex){
@@ -944,19 +944,19 @@
         }
       });
     }
-    
+
     // Animation loop (run continuously if visible, utilizing LERP)
     function animateScrub(){
       if (isHeroVisible && video.duration) {
         // Interpolate progress (smoothing factor: 0.08)
         currentProgress += (targetProgress - currentProgress) * 0.08;
-        
+
         // Scrub video time
         video.currentTime = video.duration * currentProgress;
-        
+
         // Update text classes
         updateTextScenes(currentProgress);
-        
+
         // Fade hero section slightly as it exits the bottom
         var rect = scrollSection.getBoundingClientRect();
         var scrolledPast = -rect.bottom + window.innerHeight;
@@ -969,7 +969,7 @@
       }
       requestAnimationFrame(animateScrub);
     }
-    
+
     // Wait for video to have metadata before beginning
     if (video.readyState >= 1) {
       primeVideoForScrub(video);
@@ -1001,20 +1001,20 @@
   (function(){
     var harmonySection = document.querySelector('.harmony-section');
     var video = document.querySelector('.harmony-bg-media video');
-    
+
     if(!harmonySection || !video) return;
-    
+
     var targetProgress = 0;
     var currentProgress = 0;
     var isVisible = false;
-    
+
     if('IntersectionObserver' in window){
       var observer = new IntersectionObserver(function(entries){
         isVisible = entries[0].isIntersecting;
       }, { threshold: 0.01 });
       observer.observe(harmonySection);
     }
-    
+
     function updateProgress(){
       var rect = harmonySection.getBoundingClientRect();
       var viewHeight = window.innerHeight;
@@ -1022,11 +1022,11 @@
       var currentTravel = viewHeight - rect.top;
       targetProgress = Math.min(1, Math.max(0, currentTravel / totalTravel));
     }
-    
+
     window.addEventListener('scroll', updateProgress, {passive:true});
     window.addEventListener('resize', updateProgress, {passive:true});
     updateProgress();
-    
+
     function animateHarmonyScrub(){
       if (isVisible && video.duration) {
         // Smoothing frame scrub (LERP)
@@ -1035,7 +1035,7 @@
       }
       requestAnimationFrame(animateHarmonyScrub);
     }
-    
+
     if (video.readyState >= 1) {
       primeVideoForScrub(video);
       animateHarmonyScrub();
