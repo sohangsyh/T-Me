@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>T&amp;Me — Functional Wellness Tea, Steeped Slowly</title>
+<meta name="description" content="T&amp;Me is a Hong Kong tea house crafting functional wellness blends for balance, calm, vitality, radiance and revival.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* ============ TOKENS ============ */
+  :root{
+    --paper:#F6F1E6;
+    --paper-deep:#ECE2CD;
+    --ink:#29271F;
+    --ink-soft:#5C5747;
+    --sage:#4F5E40;
+    --sage-line:#93A37C;
+    --sage-pale:#D8DEC9;
+    --clay:#9C5436;
+    --clay-deep:#7E4128;
+    --line:rgba(41,39,31,0.14);
+    --line-strong:rgba(41,39,31,0.28);
+    --shadow-diffuse:0 30px 60px -30px rgba(41,39,31,0.18);
+    --ease:cubic-bezier(0.16,1,0.3,1);
+    --max:1360px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
+  }
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Outfit',sans-serif;
+    font-weight:400;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  img{max-width:100%; display:block;}
+  a{color:inherit; text-decoration:none;}
+  h1,h2,h3{font-family:'Fraunces',serif; font-weight:500; margin:0; letter-spacing:-0.01em;}
+  p{margin:0;}
+  button{font-family:inherit; border:none; background:none; cursor:pointer; color:inherit;}
+  ::selection{background:var(--clay); color:var(--paper);}
+  :focus-visible{outline:2px solid var(--clay); outline-offset:3px; border-radius:2px;}
+
+  .wrap{max-width:var(--max); margin:0 auto; padding:0 clamp(20px,5vw,64px);}
+  .eyebrow{
+    font-family:'Space Mono',monospace;
+    font-size:11.5px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--sage);
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+  }
+  .eyebrow::before{content:''; width:14px; height:1px; background:var(--clay);}
+
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    padding:15px 28px;
+    border-radius:999px;
+    font-size:14.5px;
+    font-weight:600;
+    letter-spacing:0.01em;
+    transition:transform .45s var(--ease), box-shadow .45s var(--ease), background .3s var(--ease);
+    white-space:nowrap;
+  }
+  .btn-primary{background:var(--clay); color:var(--paper);}
+  .btn-primary:hover{box-shadow:var(--shadow-diffuse); }
+  .btn-primary:active{transform:scale(0.97);}
+  .btn-ghost{border:1px solid var(--line-strong); color:var(--ink);}
+  .btn-ghost:hover{border-color:var(--ink); background:rgba(41,39,31,0.04);}
+  .btn-ghost:active{transform:scale(0.97);}
+  .btn-line{border-bottom:1px solid var(--paper); color:var(--paper); padding:6px 0; border-radius:0;}
+
+  /* ============ REVEAL ============ */
+  .reveal{opacity:0; transform:translateY(28px); transition:opacity .9s var(--ease), transform .9s var(--ease);}
+  .reveal.is-in{opacity:1; transform:translateY(0);}
+  .reveal-stagger > *{opacity:0; transform:translateY(22px); transition:opacity .8s var(--ease), transform .8s var(--ease);}
+  .reveal-stagger.is-in > *{opacity:1; transform:translateY(0);}
+  .reveal-stagger.is-in > *:nth-child(1){transition-delay:.02s;}
+  .reveal-stagger.is-in > *:nth-child(2){transition-delay:.10s;}
+  .reveal-stagger.is-in > *:nth-child(3){transition-delay:.18s;}
+  .reveal-stagger.is-in > *:nth-child(4){transition-delay:.26s;}
+  .reveal-stagger.is-in > *:nth-child(5){transition-delay:.34s;}
+
+  /* ============ STEEPING LINE (signature element) ============ */
+  .steep-rail{
+    position:fixed;
+    top:0; right:28px; bottom:0;
+    width:34px;
+    z-index:40;
+    display:flex;
+    justify-content:center;
+    pointer-events:none;
+  }
+  .steep-rail svg{height:100%; width:100%;}
+  .steep-dot{
+    position:absolute;
+    left:50%;
+    top:0;
+    width:9px; height:9px;
+    margin-left:-4.5px;
+    border-radius:50%;
+    background:var(--clay);
+    box-shadow:0 0 0 5px rgba(156,84,54,0.14);
+    transform:translateY(0);
+    will-change:transform;
+  }
+  @media (max-width:1024px){ .steep-rail{display:none;} }
+
+  /* ============ NAV ============ */
+  .nav{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    padding:22px 0;
+    transition:padding .4s var(--ease), background .4s var(--ease), box-shadow .4s var(--ease), border-color .4s var(--ease);
+    border-bottom:1px solid transparent;
+  }
+  .nav.scrolled{
+    padding:13px 0;
+    background:rgba(246,241,230,0.72);
+    -webkit-backdrop-filter:blur(16px) saturate(140%);
+    backdrop-filter:blur(16px) saturate(140%);
+    border-bottom:1px solid var(--line);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.4);
+  }
+  .nav-row{display:flex; align-items:center; justify-content:space-between; gap:24px;}
+  .nav-mark{font-family:'Fraunces',serif; font-style:italic; font-size:23px; font-weight:500; color:var(--sage); letter-spacing:-0.01em;}
+  .nav-links{display:flex; gap:34px; list-style:none; margin:0; padding:0; font-size:14px; font-weight:500;}
+  .nav-links a{position:relative; padding-bottom:4px;}
+  .nav-links a::after{content:''; position:absolute; left:0; right:100%; bottom:0; height:1px; background:var(--clay); transition:right .4s var(--ease);}
+  .nav-links a:hover::after{right:0;}
+  .nav-actions{display:flex; align-items:center; gap:18px;}
+  .icon-btn{width:20px; height:20px; display:grid;}
+  .icon-btn svg{width:100%; height:100%;}
+  .nav-burger{display:none; flex-direction:column; gap:5px; width:24px;}
+  .nav-burger span{height:1.5px; background:var(--ink); width:100%; transition:transform .3s var(--ease), opacity .3s;}
+  @media (max-width:860px){
+    .nav-links{display:none;}
+    .nav-burger{display:flex;}
+  }
+
+  /* ============ HERO SCROLL CONTAINER ============ */
+  .hero-scroll-container {
+    position: relative;
+    height: 400vh;
+    background: var(--paper);
+  }
+  .hero-sticky-frame {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+  }
+  .hero-media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .hero-media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.88) saturate(1.05);
+    transform: scale(1.02);
+  }
+  .hero-video-mask {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse 70% 65% at 50% 50%, transparent 35%, var(--paper) 92%);
+    z-index: 1;
+  }
+  .hero-media::after {
+    content: '';
+    position: absolute; 
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(246,241,230,0.1) 0%, rgba(246,241,230,0) 40%, rgba(246,241,230,0.4) 100%);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .hero-copy-track {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+  }
+  .scroll-scene {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 clamp(20px, 5vw, 64px);
+    opacity: 0;
+    transform: translateY(30px) scale(0.96);
+    pointer-events: none;
+    transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+  }
+  .scroll-scene.active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: all;
+  }
+  .scroll-scene h1 {
+    font-size: clamp(42px, 6.6vw, 84px);
+    line-height: 0.98;
+    color: var(--ink);
+    text-shadow: 0 4px 30px rgba(246,241,230,0.7);
+    margin-top: 10px;
+  }
+  .scroll-scene h1 em { font-style: italic; color: var(--sage); }
+  .scroll-scene h2 {
+    font-size: clamp(32px, 5vw, 56px);
+    line-height: 1.1;
+    color: var(--ink);
+    margin-top: 14px;
+    max-width: 680px;
+  }
+  .scroll-scene p {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    max-width: 500px;
+    margin-top: 18px;
+  }
+  .scroll-indicator-wrap {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .scroll-arrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--clay);
+    animation: bounce 1.8s infinite alternate;
+  }
+  @keyframes bounce {
+    to { transform: translateY(6px); }
+  }
+  .hero-copy{
+    position:relative;
+    z-index:2;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:28px;
+    max-width:640px;
+    text-align:center;
+  }
+  .hero-copy .eyebrow{color:var(--sage);}
+  .hero-copy h1{
+    font-size:clamp(42px,6.6vw,84px);
+    line-height:0.98;
+    color:var(--ink);
+    text-shadow:0 4px 30px rgba(246,241,230,0.7);
+  }
+  .hero-copy h1 em{font-style:italic; color:var(--sage);}
+  .hero-sub{font-size:17px; line-height:1.6; color:var(--ink-soft); max-width:460px;}
+  .hero-cta{display:flex; align-items:center; justify-content:center; gap:26px; flex-wrap:wrap;}
+  .hero-link{font-size:14px; font-weight:600; border-bottom:1px solid var(--line-strong); padding-bottom:3px; transition:border-color .3s;}
+  .hero-link:hover{border-color:var(--ink);}
+
+  .hero-chip{
+    position:relative;
+    z-index:2;
+    margin-top:6px;
+    padding:14px 22px;
+    border-radius:999px;
+    background:rgba(246,241,230,0.82);
+    -webkit-backdrop-filter:blur(14px);
+    backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,0.5);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.5), 0 20px 40px -20px rgba(41,39,31,0.3);
+    font-family:'Space Mono',monospace;
+    font-size:11.5px;
+    letter-spacing:0.05em;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .hero-chip strong{font-size:13.5px; font-family:'Fraunces',serif; font-style:italic; font-weight:500; letter-spacing:0;}
+  .hero-chip::before{content:''; width:5px; height:5px; border-radius:50%; background:var(--clay);}
+
+  @media (max-width:980px){
+    .hero-video-mask{
+      background:radial-gradient(ellipse 95% 65% at 50% 50%, transparent 30%, var(--paper) 92%);
+    }
+  }
+
+  /* ============ SECTION HEADERS ============ */
+  .sec{padding:120px 0;}
+  .sec-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:40px;
+    margin-bottom:56px;
+    flex-wrap:wrap;
+  }
+  .sec-head h2{font-size:clamp(30px,4vw,48px); max-width:560px;}
+  .sec-head .note{max-width:340px; font-size:15px; color:var(--ink-soft); line-height:1.6; padding-bottom:6px;}
+
+  /* ============ BENEFITS — horizontal scroll, organic blobs ============ */
+  .benefits-rail{
+    display:flex;
+    gap:30px;
+    overflow-x:auto;
+    padding:6px 4px 28px;
+    scroll-snap-type:x proximity;
+    scrollbar-width:none;
+  }
+  .benefits-rail::-webkit-scrollbar{display:none;}
+  .benefits-rail{-webkit-overflow-scrolling:touch;}
+  .benefit{
+    scroll-snap-align:start;
+    flex:0 0 auto;
+    width:222px;
+    text-align:center;
+    cursor:grab;
+  }
+  .benefit:nth-child(even){width:186px; margin-top:38px;}
+  .benefit-figure{
+    position:relative;
+    border-radius:50%;
+    overflow:hidden;
+    aspect-ratio:1/1;
+    margin-bottom:18px;
+    border:1px solid var(--line);
+    transition:transform .5s var(--ease);
+  }
+  .benefit:hover .benefit-figure{transform:translateY(-6px);}
+  .benefit-figure img{width:100%; height:100%; object-fit:cover;}
+  .benefit-icon{position:absolute; top:12px; left:12px; width:30px; height:30px; border-radius:50%; background:rgba(246,241,230,0.85); display:grid; place-items:center; backdrop-filter:blur(6px);}
+  .benefit-icon svg{width:16px; height:16px; stroke:var(--sage);}
+  .benefit-name{font-family:'Fraunces',serif; font-style:italic; font-size:19px; color:var(--ink);}
+  .benefit-tag{font-family:'Space Mono',monospace; font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--sage); display:block; margin-top:4px;}
+
+  /* ============ HARMONY / ECO — asymmetric, divide not cards ============ */
+  .harmony-section {
+    position: relative;
+    overflow: hidden;
+    background: var(--paper);
+  }
+  .harmony-bg-media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    transition: opacity 0.5s var(--ease);
+  }
+  .harmony-bg-media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .harmony-video-mask {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, transparent 40%, var(--paper) 95%);
+    z-index: 1;
+  }
+  .harmony-content {
+    position: relative;
+    z-index: 2;
+  }
+  .harmony{display:grid; grid-template-columns:1.2fr 0.8fr; gap:80px; align-items:start;}
+  .harmony-statement{font-size:clamp(26px,3.4vw,40px); line-height:1.18; max-width:520px;}
+  .harmony-statement em{color:var(--sage); font-style:italic;}
+  .harmony-body{margin-top:26px; max-width:460px; font-size:15.5px; line-height:1.7; color:var(--ink-soft);}
+  .facts{border-top:1px solid var(--line);}
+  .fact{
+    display:flex; gap:18px; align-items:flex-start;
+    padding:26px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .fact-icon{width:34px; height:34px; flex:0 0 auto; border-radius:50%; border:1px solid var(--sage-line); display:grid; place-items:center;}
+  .fact-icon svg{width:16px; height:16px; stroke:var(--sage);}
+  .fact h3{font-family:'Outfit',sans-serif; font-weight:600; font-size:16px; margin-bottom:4px;}
+  .fact p{font-size:14px; color:var(--ink-soft); line-height:1.55;}
+  @media (max-width:880px){ .harmony{grid-template-columns:1fr; gap:46px;} }
+
+  .pull{
+    margin-top:110px;
+    padding-top:60px;
+    border-top:1px solid var(--line);
+    font-family:'Fraunces',serif;
+    font-style:italic;
+    font-weight:400;
+    font-size:clamp(24px,3vw,34px);
+    line-height:1.4;
+    color:var(--sage);
+    max-width:760px;
+  }
+
+  /* ============ SIGNATURE BLENDS — scroll gallery ============ */
+  .blends{background:var(--paper-deep); border-radius:48px; padding:90px 0;}
+  .blend-rail{display:flex; gap:26px; overflow-x:auto; padding:4px clamp(20px,5vw,64px) 26px; scroll-snap-type:x proximity; scrollbar-width:none;}
+  .blend-rail::-webkit-scrollbar{display:none;}
+  .blend-rail{-webkit-overflow-scrolling:touch;}
+  .blend-card{
+    scroll-snap-align:start;
+    flex:0 0 auto;
+    width:264px;
+    background:var(--paper);
+    border-radius:28px;
+    padding:18px 18px 22px;
+    box-shadow:var(--shadow-diffuse);
+  }
+  .blend-card:nth-child(3n+2){width:296px;}
+  .blend-figure{border-radius:20px; overflow:hidden; aspect-ratio:4/5; margin-bottom:16px; background:#fff;}
+  .blend-figure img{width:100%; height:100%; object-fit:cover; transition:transform .6s var(--ease);}
+  .blend-card:hover .blend-figure img{transform:scale(1.05);}
+  .blend-row{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .blend-name{font-family:'Fraunces',serif; font-size:19px; font-style:italic;}
+  .blend-note{font-size:12.5px; color:var(--ink-soft); margin-top:5px; line-height:1.5;}
+  .blend-price{font-family:'Space Mono',monospace; font-size:13px; color:var(--sage); white-space:nowrap; margin-top:2px;}
+  .blend-add{
+    margin-top:14px; width:100%;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    padding:12px; border-radius:999px;
+    border:1px solid var(--line-strong);
+    font-size:13px; font-weight:600;
+    transition:background .3s, border-color .3s, transform .25s var(--ease);
+  }
+  .blend-add:hover{border-color:var(--clay); color:var(--clay);}
+  .blend-add:active{transform:scale(0.96);}
+  .blend-add svg{width:14px; height:14px;}
+
+  /* ============ VENUE ============ */
+  .venue{position:relative; border-radius:48px; overflow:hidden; min-height:560px; display:flex; align-items:center;}
+  .venue img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0;}
+  .venue::after{
+    content:'';
+    position:absolute; inset:0;
+    background:linear-gradient(100deg, rgba(41,39,31,0.82) 0%, rgba(41,39,31,0.62) 38%, rgba(41,39,31,0.05) 72%);
+    z-index:1;
+  }
+  .venue-copy{position:relative; z-index:2; padding:70px clamp(28px,6vw,90px); max-width:560px; color:var(--paper);}
+  .venue-copy .eyebrow{color:var(--sage-pale);}
+  .venue-copy .eyebrow::before{background:var(--paper);}
+  .venue-copy h2{color:var(--paper); font-size:clamp(30px,4.2vw,52px); margin:18px 0 20px; line-height:1.08;}
+  .venue-copy p{font-size:15.5px; line-height:1.7; color:rgba(246,241,230,0.82); max-width:420px; margin-bottom:34px;}
+
+  /* ============ FOOTER ============ */
+  footer{background:var(--sage); color:var(--paper); border-radius:48px 48px 0 0; margin-top:60px; padding:90px 0 40px;}
+  .foot-top{display:grid; grid-template-columns:1.3fr 0.7fr 0.7fr 1fr; gap:50px; padding-bottom:70px; border-bottom:1px solid rgba(246,241,230,0.18);}
+  .foot-brand{font-family:'Fraunces',serif; font-style:italic; font-size:30px; margin-bottom:18px;}
+  .foot-ritual{font-size:14.5px; color:rgba(246,241,230,0.74); max-width:280px; line-height:1.6;}
+  .foot-col h4{font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:rgba(246,241,230,0.55); margin-bottom:18px;}
+  .foot-col ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px; font-size:14.5px;}
+  .foot-col a:hover{color:var(--clay);}
+  .foot-form{display:flex; align-items:center; border-bottom:1px solid rgba(246,241,230,0.4); padding-bottom:10px; gap:10px;}
+  .foot-form input{flex:1; background:none; border:none; color:var(--paper); font-family:'Outfit',sans-serif; font-size:14.5px; outline:none;}
+  .foot-form input::placeholder{color:rgba(246,241,230,0.5);}
+  .foot-form button{flex:0 0 auto;}
+  .foot-form svg{width:18px; height:18px; stroke:var(--paper); transition:transform .3s var(--ease);}
+  .foot-form button:hover svg{transform:translateX(4px);}
+  .foot-bottom{display:flex; justify-content:space-between; align-items:center; padding-top:30px; font-size:12.5px; color:rgba(246,241,230,0.5); flex-wrap:wrap; gap:12px;}
+  .foot-social{display:flex; gap:16px;}
+  .foot-social svg{width:17px; height:17px; stroke:rgba(246,241,230,0.8); transition:stroke .3s;}
+  .foot-social a:hover svg{stroke:var(--paper);}
+  @media (max-width:880px){ .foot-top{grid-template-columns:1fr 1fr; gap:40px;} }
+  @media (max-width:540px){ .foot-top{grid-template-columns:1fr;} }
+
+  @media (max-width:640px){
+    .sec{padding:80px 0;}
+    .blends{padding:60px 0; border-radius:28px;}
+    footer{border-radius:28px 28px 0 0;}
+    .venue{border-radius:28px; min-height:460px;}
+    .venue-copy{padding:44px 24px;}
+    .hero-cta{gap:16px;}
+    .btn{padding:14px 22px; font-size:14px;}
+    .foot-form{width:100%;}
+  }
+
+  @media (max-width:480px){
+    .wrap{padding:0 18px;}
+    .hero-scroll-container{height:320vh;}
+    .scroll-scene h1{font-size:clamp(34px,10vw,46px);}
+    .scroll-scene h2{font-size:clamp(26px,7vw,34px);}
+    .scroll-scene p{font-size:15px; max-width:320px;}
+    .benefit{width:170px;}
+    .benefit:nth-child(even){width:148px; margin-top:26px;}
+    .blend-card{width:220px; padding:14px 14px 18px;}
+    .blend-card:nth-child(3n+2){width:238px;}
+    .blend-name{font-size:17px;}
+    .venue{min-height:400px;}
+    .venue-copy h2{font-size:clamp(26px,7vw,34px);}
+    .venue-copy p{font-size:14.5px;}
+    .foot-top{gap:32px; padding-bottom:50px;}
+    .foot-brand{font-size:26px;}
+    .pull{margin-top:70px; padding-top:40px;}
+    .nav-links[style]{left:18px !important; right:18px !important;}
+  }
+</style>
+</head>
+<body>
+
+<!-- signature steeping rail -->
+<div class="steep-rail" aria-hidden="true">
+  <svg viewBox="0 0 10 1000" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="steepGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#D8DEC9"/>
+        <stop offset="1" stop-color="#9C5436"/>
+      </linearGradient>
+    </defs>
+    <line x1="5" y1="0" x2="5" y2="1000" stroke="rgba(41,39,31,0.1)" stroke-width="1.5"/>
+    <line id="steepLine" x1="5" y1="0" x2="5" y2="1000" stroke="url(#steepGrad)" stroke-width="1.5" stroke-dasharray="1000" stroke-dashoffset="1000"/>
+  </svg>
+  <div class="steep-dot" id="steepDot"></div>
+</div>
+
+<nav class="nav" id="nav">
+  <div class="wrap nav-row">
+    <a href="#top" class="nav-mark">T&amp;Me</a>
+    <ul class="nav-links">
+      <li><a href="#blends">Tea Collection</a></li>
+      <li><a href="#benefits">Benefits</a></li>
+      <li><a href="#venue">Wholesale</a></li>
+      <li><a href="#footer">Contact</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="icon-btn" aria-label="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      </button>
+      <button class="icon-btn" aria-label="Cart, 0 items">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 7h15l-1.5 9.5a2 2 0 0 1-2 1.5H8a2 2 0 0 1-2-1.5L4 3H2"/><circle cx="9" cy="21" r="1"/><circle cx="18" cy="21" r="1"/></svg>
+      </button>
+      <button class="nav-burger" id="burger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+
+  <!-- HERO -->
+  <!-- HERO SCROLL CONTAINER -->
+  <section class="hero-scroll-container" id="hero-scroll">
+    <div class="hero-sticky-frame">
+      <div class="hero-media" aria-hidden="true">
+        <video muted loop playsinline preload="auto">
+          <source src="tea2.mp4" type="video/mp4">
+        </video>
+        <div class="hero-video-mask"></div>
+      </div>
+      
+      <!-- Sticky copy layers that fade in and out -->
+      <div class="hero-copy-track">
+        
+        <!-- Scene 1: Intro Title -->
+        <div class="scroll-scene scene-intro active">
+          <span class="eyebrow">Functional Wellness Tea</span>
+          <h1>Your ritual,<br><em>steeped slowly.</em></h1>
+          <p class="hero-sub">Brewed for the moment between one thing and the next.</p>
+          <div class="scroll-indicator-wrap">
+            <span class="scroll-arrow">Scroll to steep</span>
+          </div>
+        </div>
+
+        <!-- Scene 2: Design Skill 1 -->
+        <div class="scroll-scene scene-skill-1">
+          <span class="eyebrow">Design Skill · 01</span>
+          <h2>Sensory Craftsmanship</h2>
+          <p class="scene-desc">We design interactive visual narratives with micro-interactions, responsive fluid typography, and tactile layouts that engage the senses.</p>
+        </div>
+
+        <!-- Scene 3: Design Skill 2 -->
+        <div class="scroll-scene scene-skill-2">
+          <span class="eyebrow">Design Skill · 02</span>
+          <h2>Motion Choreography</h2>
+          <p class="scene-desc">Choreographing state-driven transitions, parallax depths, and physics-based animations that make interfaces feel organic and alive.</p>
+        </div>
+
+        <!-- Scene 4: Design Skill 3 -->
+        <div class="scroll-scene scene-skill-3">
+          <span class="eyebrow">Design Skill · 03</span>
+          <h2>Performance Engineering</h2>
+          <p class="scene-desc">Optimizing render trees, caching properties, and leveraging GPU pipelines to deliver 60fps cinematic web experiences.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- BENEFITS -->
+  <section class="sec" id="benefits">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <h2>Tea benefits, <em style="font-style:italic; color:var(--sage)">at a glance</em></h2>
+        <p class="note">Five collections, each built around a single mood. Pick the one your week is asking for.</p>
+      </div>
+    </div>
+    <div class="wrap" style="max-width:none; padding:0;">
+      <div class="benefits-rail reveal-stagger" id="benefitsRail" style="padding-left:clamp(20px,5vw,64px); padding-right:clamp(20px,5vw,64px);">
+        <div class="benefit">
+          <div class="benefit-figure">
+            <div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v18M5 8l7-5 7 5M5 16l7 5 7-5"/></svg></div>
+            <img src="https://tandmeofficial.com/cdn/shop/collections/1.png?v=1776389887&width=600" alt="Balance collection blend">
+          </div>
+          <span class="benefit-name">Balance</span><span class="benefit-tag">Steady &amp; centered</span>
+        </div>
+        <div class="benefit">
+          <div class="benefit-figure">
+            <div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12c2 2 4 2 6 0s4-2 6 0 4 2 6 0M3 17c2 2 4 2 6 0s4-2 6 0 4 2 6 0"/></svg></div>
+            <img src="https://tandmeofficial.com/cdn/shop/collections/5.png?v=1776359621&width=600" alt="Calm collection blend">
+          </div>
+          <span class="benefit-name">Calm</span><span class="benefit-tag">Slow exhale</span>
+        </div>
+        <div class="benefit">
+          <div class="benefit-figure">
+            <div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21V9M12 9c0-4 2-7 6-7-1 4-2 7-6 7zM12 13c0-3-2-5-6-5 1 3 2 5 6 5z"/></svg></div>
+            <img src="https://tandmeofficial.com/cdn/shop/collections/2.png?v=1776389900&width=600" alt="Vitality collection blend">
+          </div>
+          <span class="benefit-name">Vitality</span><span class="benefit-tag">Bright energy</span>
+        </div>
+        <div class="benefit">
+          <div class="benefit-figure">
+            <div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></div>
+            <img src="https://tandmeofficial.com/cdn/shop/collections/3.png?v=1776359695&width=600" alt="Radiance collection blend">
+          </div>
+          <span class="benefit-name">Radiance</span><span class="benefit-tag">Inner glow</span>
+        </div>
+        <div class="benefit">
+          <div class="benefit-figure">
+            <div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12a8 8 0 0 1 14-5M20 12a8 8 0 0 1-14 5M16 4v4h-4M8 20v-4h4"/></svg></div>
+            <img src="https://tandmeofficial.com/cdn/shop/collections/4.png?v=1776359651&width=600" alt="Revive collection blend">
+          </div>
+          <span class="benefit-name">Revive</span><span class="benefit-tag">Reset &amp; restore</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HARMONY / ECO -->
+  <section class="sec harmony-section" id="harmony">
+    <div class="harmony-bg-media" aria-hidden="true">
+      <video muted loop playsinline preload="auto">
+        <source src="tea%201.mp4" type="video/mp4">
+      </video>
+      <div class="harmony-video-mask"></div>
+    </div>
+    <div class="wrap harmony-content">
+      <div class="harmony">
+        <div class="reveal">
+          <span class="eyebrow">Harmony in every cup</span>
+          <p class="harmony-statement" style="margin-top:18px;">Thoughtfully made, <em>gently bodied.</em></p>
+          <p class="harmony-body">Every blend is built from natural botanicals and wholesome ingredients, then packed in materials chosen for what they leave behind, or don't. Comfort for you, and for the cupboard it sits in after.</p>
+        </div>
+        <div class="reveal">
+          <div class="facts">
+            <div class="fact">
+              <div class="fact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2 4 7v6c0 5 4 8 8 9 4-1 8-4 8-9V7l-8-5z"/></svg></div>
+              <div><h3>Microplastic-free</h3><p>No synthetic mesh, no plastic seals, nothing shedding into your cup.</p></div>
+            </div>
+            <div class="fact">
+              <div class="fact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21c4-2 7-5 7-10a7 7 0 0 0-14 0c0 5 3 8 7 10z"/></svg></div>
+              <div><h3>Biodegradable</h3><p>Sachets and wrapping return to soil rather than sit in landfill.</p></div>
+            </div>
+            <div class="fact">
+              <div class="fact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M17 2l4 4-4 4M21 6H9a4 4 0 0 0-4 4v2M7 22l-4-4 4-4M3 18h12a4 4 0 0 0 4-4v-2"/></svg></div>
+              <div><h3>Recyclable</h3><p>Outer cartons and shippers are kept in the loop, not the bin.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="pull reveal">"Made for people who cherish comfort, care, and everyday rituals, not just another box on a shelf."</p>
+    </div>
+  </section>
+
+  <!-- SIGNATURE BLENDS -->
+  <section class="sec" id="blends">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <h2>Signature <em style="font-style:italic; color:var(--sage)">tea blends</em></h2>
+        <p class="note">HK$115 each · tea bag or 30g loose leaf · steeped in small batches.</p>
+      </div>
+    </div>
+    <div class="blends">
+      <div class="blend-rail reveal-stagger" id="blendRail">
+        <div class="blend-card">
+          <div class="blend-figure"><img src="https://tandmeofficial.com/cdn/shop/files/T_Me-1271.jpg?v=1776050694&width=600" alt="A cup of Autumn Glow tea, golden in color"></div>
+          <div class="blend-row"><div><div class="blend-name">Autumn Glow</div><div class="blend-note">Apple &amp; warming ginger</div></div><div class="blend-price">HK$115</div></div>
+          <button class="blend-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Add to cup</button>
+        </div>
+        <div class="blend-card">
+          <div class="blend-figure"><img src="https://tandmeofficial.com/cdn/shop/files/T_Me-1274.jpg?v=1776050548&width=600" alt="A cup of Rose Reverie tea with fresh roses"></div>
+          <div class="blend-row"><div><div class="blend-name">Rose Reverie</div><div class="blend-note">Petal-soft, lightly sweet</div></div><div class="blend-price">HK$115</div></div>
+          <button class="blend-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Add to cup</button>
+        </div>
+        <div class="blend-card">
+          <div class="blend-figure"><img src="https://tandmeofficial.com/cdn/shop/files/T_Me-1279.jpg?v=1776051039&width=600" alt="A cup of Crimson Currant tea, deep red in color"></div>
+          <div class="blend-row"><div><div class="blend-name">Crimson Currant</div><div class="blend-note">Black currant, tart &amp; bright</div></div><div class="blend-price">HK$115</div></div>
+          <button class="blend-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Add to cup</button>
+        </div>
+        <div class="blend-card">
+          <div class="blend-figure"><img src="https://tandmeofficial.com/cdn/shop/files/rn-image_picker_lib_temp_0ab262b7-5665-4f6d-8160-f1de599c0c0e.jpg?v=1776051133&width=600" alt="White Grape Bliss tea pouch on white grapes"></div>
+          <div class="blend-row"><div><div class="blend-name">White Grape Bliss</div><div class="blend-note">Oolong, white grape, jasmine</div></div><div class="blend-price">HK$115</div></div>
+          <button class="blend-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Add to cup</button>
+        </div>
+        <div class="blend-card">
+          <div class="blend-figure"><img src="https://tandmeofficial.com/cdn/shop/files/T_Me-1273.jpg?v=1775966553&width=600" alt="A cup of Sunlit Escape tea, golden yellow"></div>
+          <div class="blend-row"><div><div class="blend-name">Sunlit Escape</div><div class="blend-note">Mango &amp; pineapple</div></div><div class="blend-price">HK$115</div></div>
+          <button class="blend-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Add to cup</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VENUE -->
+  <section class="sec" id="venue">
+    <div class="wrap">
+      <div class="venue reveal">
+        <img src="https://tandmeofficial.com/cdn/shop/files/minimal-tea-caf-interior.png?v=1772197511&width=1600" alt="A minimal, calm tea cafe interior in neutral tones">
+        <div class="venue-copy">
+          <span class="eyebrow">For your venue</span>
+          <h2>Bring the ritual to your space.</h2>
+          <p>Curated tea rituals that turn a commercial space into a tranquil escape, crafted to leave a lasting impression on every guest who walks through your door.</p>
+          <a href="#footer" class="btn btn-ghost" style="border-color:rgba(246,241,230,0.4); color:var(--paper);">Wholesale inquiry</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer id="footer">
+  <div class="wrap">
+    <div class="foot-top">
+      <div>
+        <div class="foot-brand">T&amp;Me</div>
+        <p class="foot-ritual">Your moment. Your venue. Your ritual begins here. Hong Kong, est. for the quiet hour.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="#top">Home</a></li>
+          <li><a href="#blends">Tea Collection</a></li>
+          <li><a href="#venue">Wholesale</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Connect</h4>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Instagram</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Begin your ritual</h4>
+        <form class="foot-form" onsubmit="event.preventDefault(); this.querySelector('input').value='Thank you';">
+          <label for="footEmail" style="position:absolute; left:-9999px;">Email address</label>
+          <input id="footEmail" type="email" required placeholder="Email address">
+          <button type="submit" aria-label="Subscribe">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </button>
+        </form>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 T&amp;Me. Privacy · Shipping · Refund Policy</span>
+      <div class="foot-social">
+        <a href="https://www.facebook.com/people/TMe/61587531640754/" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M14 9h3V6h-3c-1.7 0-3 1.3-3 3v2H9v3h2v6h3v-6h2.5l.5-3H14V9z"/></svg></a>
+        <a href="https://www.instagram.com/tandme.official" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Nav scroll state
+  var nav = document.getElementById('nav');
+  function onScroll(){
+    if(window.scrollY > 24){ nav.classList.add('scrolled'); } else { nav.classList.remove('scrolled'); }
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  // Mobile menu (simple full list reveal)
+  var burger = document.getElementById('burger');
+  var links = document.querySelector('.nav-links');
+  burger.addEventListener('click', function(){
+    var open = burger.getAttribute('aria-expanded') === 'true';
+    burger.setAttribute('aria-expanded', String(!open));
+    if(!open){
+      links.style.display = 'flex';
+      links.style.flexDirection = 'column';
+      links.style.position = 'fixed';
+      links.style.top = '64px';
+      links.style.right = '20px';
+      links.style.background = 'var(--paper)';
+      links.style.padding = '20px 28px';
+      links.style.borderRadius = '18px';
+      links.style.boxShadow = 'var(--shadow-diffuse)';
+      links.style.gap = '18px';
+    } else {
+      links.style.display = 'none';
+    }
+  });
+
+  // Reveal on scroll
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('is-in'); io.unobserve(e.target); }
+      });
+    }, {threshold:0.18});
+    document.querySelectorAll('.reveal, .reveal-stagger').forEach(function(el){ io.observe(el); });
+  } else {
+    document.querySelectorAll('.reveal, .reveal-stagger').forEach(function(el){ el.classList.add('is-in'); });
+  }
+
+  // Steeping rail & Hero scroll scrubbing loops
+  var steepLine = document.getElementById('steepLine');
+  var steepDot = document.getElementById('steepDot');
+  var railHeight = window.innerHeight;
+  var ticking = false;
+  
+  function updateSteepRail(){
+    var doc = document.documentElement;
+    var scrollPct = window.scrollY / Math.max(1, (doc.scrollHeight - doc.clientHeight));
+    scrollPct = Math.min(1, Math.max(0, scrollPct));
+    if(steepLine){ steepLine.setAttribute('stroke-dashoffset', String(1000 - (scrollPct*1000))); }
+    if(steepDot){ steepDot.style.transform = 'translateY(' + (scrollPct * (railHeight - 10)) + 'px)'; }
+    ticking = false;
+  }
+  
+  window.addEventListener('scroll', function(){
+    if(!ticking){ requestAnimationFrame(updateSteepRail); ticking = true; }
+  }, {passive:true});
+  
+  window.addEventListener('resize', function(){
+    railHeight = window.innerHeight;
+    updateSteepRail();
+  });
+  
+  updateSteepRail();
+
+  // Scroll Video Scrubbing Engine (Smoothed Lerp)
+  (function(){
+    var scrollSection = document.getElementById('hero-scroll');
+    var video = document.querySelector('.hero-media video');
+    var scenes = [
+      document.querySelector('.scene-intro'),
+      document.querySelector('.scene-skill-1'),
+      document.querySelector('.scene-skill-2'),
+      document.querySelector('.scene-skill-3')
+    ];
+    
+    if(!scrollSection || !video) return;
+    
+    var targetProgress = 0;
+    var currentProgress = 0;
+    var isHeroVisible = true;
+    
+    // Check if section is visible in viewport to save resources
+    if('IntersectionObserver' in window){
+      var observer = new IntersectionObserver(function(entries){
+        isHeroVisible = entries[0].isIntersecting;
+      }, { threshold: 0.01 });
+      observer.observe(scrollSection);
+    }
+    
+    function updateTargetProgress(){
+      var rect = scrollSection.getBoundingClientRect();
+      var scrolled = -rect.top;
+      var maxScroll = rect.height - window.innerHeight;
+      if (maxScroll > 0) {
+        targetProgress = Math.min(1, Math.max(0, scrolled / maxScroll));
+      }
+    }
+    
+    window.addEventListener('scroll', updateTargetProgress, {passive:true});
+    window.addEventListener('resize', updateTargetProgress, {passive:true});
+    updateTargetProgress();
+    
+    // Update text overlays based on progress
+    function updateTextScenes(progress){
+      var activeIndex = -1;
+      if (progress >= 0.0 && progress <= 0.16) {
+        activeIndex = 0;
+      } else if (progress >= 0.24 && progress <= 0.44) {
+        activeIndex = 1;
+      } else if (progress >= 0.52 && progress <= 0.72) {
+        activeIndex = 2;
+      } else if (progress >= 0.80 && progress <= 1.0) {
+        activeIndex = 3;
+      }
+      
+      scenes.forEach(function(scene, i){
+        if(!scene) return;
+        if(i === activeIndex){
+          scene.classList.add('active');
+        } else {
+          scene.classList.remove('active');
+        }
+      });
+    }
+    
+    // Animation loop (run continuously if visible, utilizing LERP)
+    function animateScrub(){
+      if (isHeroVisible && video.duration) {
+        // Interpolate progress (smoothing factor: 0.08)
+        currentProgress += (targetProgress - currentProgress) * 0.08;
+        
+        // Scrub video time
+        video.currentTime = video.duration * currentProgress;
+        
+        // Update text classes
+        updateTextScenes(currentProgress);
+        
+        // Fade hero section slightly as it exits the bottom
+        var rect = scrollSection.getBoundingClientRect();
+        var scrolledPast = -rect.bottom + window.innerHeight;
+        if (scrolledPast > 0) {
+          var fadeOutProgress = scrolledPast / window.innerHeight;
+          scrollSection.style.opacity = Math.max(0, 1 - fadeOutProgress);
+        } else {
+          scrollSection.style.opacity = 1;
+        }
+      }
+      requestAnimationFrame(animateScrub);
+    }
+    
+    // Wait for video to have metadata before beginning
+    if (video.readyState >= 1) {
+      animateScrub();
+    } else {
+      video.addEventListener('loadedmetadata', animateScrub);
+    }
+  })();
+
+  // Magnetic pull for primary CTA (desktop only, light touch)
+  if(!reduced && window.matchMedia('(min-width:980px)').matches){
+    document.querySelectorAll('.btn-primary').forEach(function(btn){
+      btn.addEventListener('mousemove', function(e){
+        var r = btn.getBoundingClientRect();
+        var x = (e.clientX - r.left - r.width/2) * 0.18;
+        var y = (e.clientY - r.top - r.height/2) * 0.3;
+        btn.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+      });
+      btn.addEventListener('mouseleave', function(){ btn.style.transform = 'translate(0,0)'; });
+    });
+  }
+
+
+
+  // Scroll Video Scrubbing for Harmony section (tea 1.mp4)
+  (function(){
+    var harmonySection = document.querySelector('.harmony-section');
+    var video = document.querySelector('.harmony-bg-media video');
+    
+    if(!harmonySection || !video) return;
+    
+    var targetProgress = 0;
+    var currentProgress = 0;
+    var isVisible = false;
+    
+    if('IntersectionObserver' in window){
+      var observer = new IntersectionObserver(function(entries){
+        isVisible = entries[0].isIntersecting;
+      }, { threshold: 0.01 });
+      observer.observe(harmonySection);
+    }
+    
+    function updateProgress(){
+      var rect = harmonySection.getBoundingClientRect();
+      var viewHeight = window.innerHeight;
+      var totalTravel = rect.height + viewHeight;
+      var currentTravel = viewHeight - rect.top;
+      targetProgress = Math.min(1, Math.max(0, currentTravel / totalTravel));
+    }
+    
+    window.addEventListener('scroll', updateProgress, {passive:true});
+    window.addEventListener('resize', updateProgress, {passive:true});
+    updateProgress();
+    
+    function animateHarmonyScrub(){
+      if (isVisible && video.duration) {
+        // Smoothing frame scrub (LERP)
+        currentProgress += (targetProgress - currentProgress) * 0.08;
+        video.currentTime = video.duration * currentProgress;
+      }
+      requestAnimationFrame(animateHarmonyScrub);
+    }
+    
+    if (video.readyState >= 1) {
+      animateHarmonyScrub();
+    } else {
+      video.addEventListener('loadedmetadata', animateHarmonyScrub);
+    }
+  })();
+
+  // Pointer-drag for horizontal rails (mouse users)
+  [document.getElementById('benefitsRail'), document.getElementById('blendRail')].forEach(function(rail){
+    if(!rail) return;
+    var isDown = false, startX, scrollLeft;
+    rail.addEventListener('mousedown', function(e){ isDown = true; startX = e.pageX; scrollLeft = rail.scrollLeft; rail.style.cursor='grabbing'; });
+    window.addEventListener('mouseup', function(){ isDown = false; rail.style.cursor='grab'; });
+    window.addEventListener('mousemove', function(e){
+      if(!isDown) return;
+      rail.scrollLeft = scrollLeft - (e.pageX - startX);
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
